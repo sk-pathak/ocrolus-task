@@ -7,12 +7,11 @@ import (
 )
 
 func RegisterUserRoutes(r *gin.Engine, userHandler *handler.UserHandler, jwtSecret []byte) {
-	r.POST("/users", userHandler.CreateUser)
-
-	protectedGroup := r.Group("/users")
+	protectedGroup := r.Group("/")
 	protectedGroup.Use(middlewares.AuthMiddleware(jwtSecret))
 	{
-		protectedGroup.GET("/", userHandler.GetUsers)
-		protectedGroup.GET("/:id", userHandler.GetUser)
+		protectedGroup.GET("/users", userHandler.GetUsers)
+		protectedGroup.GET("/users/:id", userHandler.GetUser)
+		protectedGroup.GET("/me", userHandler.GetUser)
 	}
 }

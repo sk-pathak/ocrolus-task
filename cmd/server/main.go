@@ -37,7 +37,7 @@ func main() {
 
 	userRepo := repo.NewUserRepository(queries)
 	userService := service.NewUserService(userRepo)
-	authService := service.NewAuthService([]byte(cfg.JWTSecret), userService)
+	authService := service.NewAuthService([]byte(cfg.JWTSecret), userService, userRepo)
 
 	userHandler := handler.NewUserHandler(userService)
 	authHandler := handler.NewAuthHandler(authService)
