@@ -36,10 +36,14 @@ func main() {
 	queries := db.New(dbPool)
 
 	userRepo := repo.NewUserRepository(queries)
+	articleRepo := repo.NewArticleRepository(queries)
+
 	userService := service.NewUserService(userRepo)
+	articleService := service.NewArticleService(articleRepo)
 	authService := service.NewAuthService([]byte(cfg.JWTSecret), userService, userRepo)
 
 	userHandler := handler.NewUserHandler(userService)
+	articleHandler := handler.NewArticleHandler(articleService)
 	authHandler := handler.NewAuthHandler(authService)
 
 	r := gin.Default()
@@ -47,6 +51,7 @@ func main() {
 
 	routes.RegisterAuthRoutes(r, authHandler, []byte(cfg.JWTSecret))
 	routes.RegisterUserRoutes(r, userHandler, []byte(cfg.JWTSecret))
+	routes.RegisterArticleRoutes(r, articleHandler, []byte(cfg.JWTSecret))
 
 	log.Printf("Server is running on port %s", cfg.Port)
 	log.Fatal(r.Run(":" + cfg.Port))

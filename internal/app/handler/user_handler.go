@@ -10,11 +10,11 @@ import (
 )
 
 type UserHandler struct {
-	service *service.UserService
+	userService *service.UserService
 }
 
-func NewUserHandler(service *service.UserService) *UserHandler {
-	return &UserHandler{service: service}
+func NewUserHandler(userService *service.UserService) *UserHandler {
+	return &UserHandler{userService: userService}
 }
 
 func (h *UserHandler) CreateUser(c *gin.Context) {
@@ -26,7 +26,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	if err := h.service.CreateUser(ctx, &user); err != nil {
+	if err := h.userService.CreateUser(ctx, &user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
 		return
 	}
@@ -37,7 +37,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 func (h *UserHandler) GetUsers(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	users, err := h.service.GetAllUsers(ctx)
+	users, err := h.userService.GetAllUsers(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch users"})
 		return
@@ -55,7 +55,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	user, err := h.service.GetUser(ctx, id)
+	user, err := h.userService.GetUser(ctx, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return

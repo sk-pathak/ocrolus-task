@@ -4,6 +4,19 @@
 
 package db
 
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+type Article struct {
+	ID        int64
+	Title     string
+	Content   string
+	AuthorID  pgtype.Int8
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
 type User struct {
 	ID       int64
 	Name     string

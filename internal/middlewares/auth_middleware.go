@@ -2,10 +2,12 @@ package middlewares
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"ocrolus-task/internal/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AuthMiddleware(secret []byte) gin.HandlerFunc {
@@ -26,7 +28,14 @@ func AuthMiddleware(secret []byte) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", claims.UserID)
+		userID, err := strconv.ParseInt(claims.UserID, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user ID in token"})
+			c.Abort()
+			return
+		}
+
+		c.Set("user_id", userID)
 		c.Next()
 	}
 }

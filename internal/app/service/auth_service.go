@@ -20,7 +20,7 @@ func NewAuthService(secret []byte, UserService *UserService, UserRepo *repositor
 	return &AuthService{
 		JWTSecret:   secret,
 		UserService: UserService,
-		UserRepo: UserRepo,
+		UserRepo:    UserRepo,
 	}
 }
 
@@ -53,8 +53,6 @@ func (s *AuthService) RegisterUser(ctx context.Context, req RegisterRequest) (st
 	if err != nil {
 		return "", errors.New("failed to fetch newly created user")
 	}
-
-	print("supppp")
 
 	return utils.GenerateJWT(fmt.Sprint(user.ID), s.JWTSecret)
 }
