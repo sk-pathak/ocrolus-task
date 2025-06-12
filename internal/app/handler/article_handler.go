@@ -111,3 +111,17 @@ func (h *ArticleHandler) DeleteArticle(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+func (h *ArticleHandler) ListArticlesByAuthor(c *gin.Context) {
+    userID := c.MustGet("user_id").(int64)
+    limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+    offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+
+    articles, err := h.articleService.ListArticlesByAuthor(c.Request.Context(), userID, int32(limit), int32(offset))
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, articles)
+}

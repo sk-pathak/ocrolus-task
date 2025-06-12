@@ -47,6 +47,7 @@ func main() {
 	authHandler := handler.NewAuthHandler(authService)
 
 	r := gin.Default()
+	r.RedirectTrailingSlash = true
 	r.Use(middlewares.SetupCORS())
 
 	routes.RegisterAuthRoutes(r, authHandler, []byte(cfg.JWTSecret))

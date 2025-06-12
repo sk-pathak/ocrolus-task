@@ -100,6 +100,46 @@ func (q *Queries) ListArticles(ctx context.Context, arg ListArticlesParams) ([]A
 	return items, nil
 }
 
+const listArticlesByAuthor = `-- name: ListArticlesByAuthor :many
+SELECT id, title, content, author_id, created_at, updated_at FROM articles
+WHERE author_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+`
+
+type ListArticlesByAuthorParams struct {
+	AuthorID pgtype.Int8
+	Limit    int32
+	Offset   int32
+}
+
+func (q *Queries) ListArticlesByAuthor(ctx context.Context, arg ListArticlesByAuthorParams) ([]Article, error) {
+	rows, err := q.db.Query(ctx, listArticlesByAuthor, arg.AuthorID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Article
+	for rows.Next() {
+		var i Article
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Content,
+			&i.AuthorID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateArticle = `-- name: UpdateArticle :one
 UPDATE articles
 SET title = $2, content = $3, updated_at = now()

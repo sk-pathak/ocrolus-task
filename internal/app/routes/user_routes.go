@@ -12,5 +12,4 @@ func RegisterUserRoutes(r *gin.Engine, userHandler *handler.UserHandler, jwtSecr
 
 	protectedGroup.GET("/users", userHandler.GetUsers)
 	protectedGroup.GET("/users/:id", userHandler.GetUser)
-	protectedGroup.GET("/me", userHandler.GetUser)
 }

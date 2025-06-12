@@ -17,3 +17,9 @@ RETURNING *;
 
 -- name: DeleteArticle :exec
 DELETE FROM articles WHERE id = $1;
+
+-- name: ListArticlesByAuthor :many
+SELECT * FROM articles
+WHERE author_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3;
