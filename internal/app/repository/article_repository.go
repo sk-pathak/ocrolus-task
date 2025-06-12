@@ -47,13 +47,17 @@ func (r *ArticleRepository) Delete(ctx context.Context, id int64) error {
 }
 
 func (r *ArticleRepository) ListArticlesByAuthor(ctx context.Context, authorID int64, limit, offset int32) ([]db.Article, error) {
-    return r.queries.ListArticlesByAuthor(ctx, db.ListArticlesByAuthorParams{
-        AuthorID: pgtype.Int8{Int64: authorID, Valid: true},
-        Limit:    limit,
-        Offset:   offset,
-    })
+	return r.queries.ListArticlesByAuthor(ctx, db.ListArticlesByAuthorParams{
+		AuthorID: pgtype.Int8{Int64: authorID, Valid: true},
+		Limit:    limit,
+		Offset:   offset,
+	})
 }
 
 func (r *ArticleRepository) CountArticlesByAuthor(ctx context.Context, authorID int64) (int64, error) {
-	return r.queries.CountArticlesByAuthor(ctx, (pgtype.Int8{Int64: authorID}))
+	return r.queries.CountArticlesByAuthor(ctx, (pgtype.Int8{Int64: authorID, Valid: true}))
+}
+
+func (r *ArticleRepository) CountArticles(ctx context.Context) (int64, error) {
+	return r.queries.CountArticles(ctx)
 }

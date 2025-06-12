@@ -61,13 +61,26 @@ func (h *ArticleHandler) ListArticles(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	articles, err := h.articleService.ListArticles(c.Request.Context(), int32(limit), int32(offset))
+	ctx := c.Request.Context()
+
+	articles, err := h.articleService.ListArticles(ctx, int32(limit), int32(offset))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, articles)
+	totalCount, err := h.articleService.CountArticles(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"articles": articles,
+		"total":    totalCount,
+		"limit":    limit,
+		"offset":   offset,
+	})
 }
 
 type updateArticleRequest struct {
@@ -113,28 +126,28 @@ func (h *ArticleHandler) DeleteArticle(c *gin.Context) {
 }
 
 func (h *ArticleHandler) ListArticlesByAuthor(c *gin.Context) {
-    userID := c.MustGet("user_id").(int64)
-    limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
-    offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	userID := c.MustGet("user_id").(int64)
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
 	ctx := c.Request.Context()
 
-    articles, err := h.articleService.ListArticlesByAuthor(ctx, userID, int32(limit), int32(offset))
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+	articles, err := h.articleService.ListArticlesByAuthor(ctx, userID, int32(limit), int32(offset))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	totalCount, err := h.articleService.CountArticlesByAuthor(ctx, userID)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{
-        "articles": articles,
-        "total":    totalCount,
-        "limit":    limit,
-        "offset":   offset,
-    })
+	c.JSON(http.StatusOK, gin.H{
+		"articles": articles,
+		"total":    totalCount,
+		"limit":    limit,
+		"offset":   offset,
+	})
 }

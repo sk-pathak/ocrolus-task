@@ -26,3 +26,6 @@ LIMIT $2 OFFSET $3;
 
 -- name: CountArticlesByAuthor :one
 SELECT COUNT(*) FROM articles WHERE author_id = $1;
+
+-- name: CountArticles :one
+SELECT COUNT(*) FROM articles;

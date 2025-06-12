@@ -1,6 +1,5 @@
 ### Backend Task
 
-- pagination
 - recenty viewed (in memory or in db)
 - dockerize
 - testing
