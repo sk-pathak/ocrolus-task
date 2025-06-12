@@ -44,3 +44,7 @@ func (s *ArticleService) DeleteArticle(ctx context.Context, id int64) error {
 func (s *ArticleService) ListArticlesByAuthor(ctx context.Context, userID int64, limit, offset int32) ([]db.Article, error) {
     return s.articleRepo.ListArticlesByAuthor(ctx, userID, limit, offset)
 }
+
+func (s *ArticleService) CountArticlesByAuthor(ctx context.Context, authorID int64) (int64, error) {
+	return s.articleRepo.CountArticlesByAuthor(ctx, authorID)
+}

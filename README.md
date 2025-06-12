@@ -1,15 +1,13 @@
 ### Backend Task
 
-- logout
-- store token in cookie + refresh tokens
-- recenty viewed (in memory or in db)?
 - pagination
+- recenty viewed (in memory or in db)
 - dockerize
-- readme
 - testing
+- readme
 
 ### if time allows
 
 - caching
 - rate limit
-- search
+- cookie+refresh tokens

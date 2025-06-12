@@ -53,3 +53,7 @@ func (r *ArticleRepository) ListArticlesByAuthor(ctx context.Context, authorID i
         Offset:   offset,
     })
 }
+
+func (r *ArticleRepository) CountArticlesByAuthor(ctx context.Context, authorID int64) (int64, error) {
+	return r.queries.CountArticlesByAuthor(ctx, (pgtype.Int8{Int64: authorID}))
+}

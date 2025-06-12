@@ -11,6 +11,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const countArticlesByAuthor = `-- name: CountArticlesByAuthor :one
+SELECT COUNT(*) FROM articles WHERE author_id = $1
+`
+
+func (q *Queries) CountArticlesByAuthor(ctx context.Context, authorID pgtype.Int8) (int64, error) {
+	row := q.db.QueryRow(ctx, countArticlesByAuthor, authorID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createArticle = `-- name: CreateArticle :one
 INSERT INTO articles (title, content, author_id)
 VALUES ($1, $2, $3)
