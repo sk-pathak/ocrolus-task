@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ocrolus
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    ports:
+      - "5433:5432"
+    secrets:
+      - db_password
+
+  ocrolus-app:
+    build: .
+    container_name: ocrolus
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      DB_NAME: ocrolus
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/ocrolus-app
+    env_file:
+      - .env
+    secrets:
+      - db_password
+    command: ["/bin/app/entrypoint.sh"]
+
+secrets:
+  db_password:
+    file: .secrets
