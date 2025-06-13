@@ -49,6 +49,7 @@ func main() {
 	r := gin.Default()
 	r.RedirectTrailingSlash = true
 	r.Use(middlewares.SetupCORS())
+	r.Use(middlewares.RateLimiterMiddleware())
 
 	routes.RegisterAuthRoutes(r, authHandler, []byte(cfg.JWTSecret))
 	routes.RegisterUserRoutes(r, userHandler, []byte(cfg.JWTSecret))

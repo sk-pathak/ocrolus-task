@@ -3,9 +3,8 @@
 - recenty viewed (in memory or in db)
 - readme & comments
 
-### Xtras
+### Next Steps
 
-- rate limit
-- cookie+refresh token
-- Role Based Access Control
-- Testing
+- Refresh Tokens for JWT (*more secure*)
+- Role Based Access Control (*finer control*)
+- Unit Tests
