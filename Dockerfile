@@ -5,7 +5,6 @@ WORKDIR /ocrolus-app
 
 RUN apk add --no-cache make git
 
-# Install goose
 RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
 COPY go.mod go.sum ./

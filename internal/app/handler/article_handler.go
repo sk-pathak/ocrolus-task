@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"ocrolus-task/internal/app/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ArticleHandler struct {
@@ -40,15 +42,13 @@ func (h *ArticleHandler) CreateArticle(c *gin.Context) {
 }
 
 func (h *ArticleHandler) GetArticle(c *gin.Context) {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	articleId, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	userID := c.MustGet("user_id").(int64)
-
-	article, err := h.articleService.GetArticle(c.Request.Context(), userID, id)
+	article, err := h.articleService.GetArticle(c.Request.Context(), articleId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
 		return
@@ -89,7 +89,7 @@ type updateArticleRequest struct {
 }
 
 func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	articleId, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
@@ -101,8 +101,14 @@ func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
 		return
 	}
 
-	article, err := h.articleService.UpdateArticle(c.Request.Context(), id, req.Title, req.Content)
+	userId := c.MustGet("user_id").(int64)
+
+	article, err := h.articleService.UpdateArticle(c.Request.Context(), userId, articleId, req.Title, req.Content)
 	if err != nil {
+		if errors.Is(err, service.ErrUnauthorized) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -111,13 +117,19 @@ func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
 }
 
 func (h *ArticleHandler) DeleteArticle(c *gin.Context) {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	articleId, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	if err := h.articleService.DeleteArticle(c.Request.Context(), id); err != nil {
+	userId := c.MustGet("user_id").(int64)
+
+	if err := h.articleService.DeleteArticle(c.Request.Context(), userId, articleId); err != nil {
+		if errors.Is(err, service.ErrUnauthorized) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

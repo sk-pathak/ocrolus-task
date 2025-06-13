@@ -1,10 +1,11 @@
 ### Backend Task
 
 - recenty viewed (in memory or in db)
-- readme
+- readme & comments
 
-### if time allows
+### Xtras
 
 - rate limit
-- caching
-- cookie+refresh tokens
+- cookie+refresh token
+- Role Based Access Control
+- Testing

@@ -2,9 +2,12 @@ package service
 
 import (
 	"context"
+	"errors"
 	"ocrolus-task/internal/app/repository"
 	"ocrolus-task/internal/db"
 )
+
+var ErrUnauthorized = errors.New("unauthorized")
 
 type ArticleService struct {
 	articleRepo *repository.ArticleRepository
@@ -20,8 +23,8 @@ func (s *ArticleService) CreateArticle(ctx context.Context, title, content strin
 	return s.articleRepo.Create(ctx, title, content, authorID)
 }
 
-func (s *ArticleService) GetArticle(ctx context.Context, userID, id int64) (db.Article, error) {
-	article, err := s.articleRepo.Get(ctx, id)
+func (s *ArticleService) GetArticle(ctx context.Context, articleId int64) (db.Article, error) {
+	article, err := s.articleRepo.Get(ctx, articleId)
 	if err != nil {
 		return db.Article{}, err
 	}
@@ -33,12 +36,28 @@ func (s *ArticleService) ListArticles(ctx context.Context, limit, offset int32) 
 	return s.articleRepo.List(ctx, limit, offset)
 }
 
-func (s *ArticleService) UpdateArticle(ctx context.Context, id int64, title, content string) (db.Article, error) {
-	return s.articleRepo.Update(ctx, id, title, content)
+func (s *ArticleService) UpdateArticle(ctx context.Context, userId, articleId int64, title, content string) (db.Article, error) {
+	article, err := s.articleRepo.Get(ctx, articleId)
+	if err != nil {
+		return db.Article{}, err
+	}
+
+	if article.AuthorID.Int64 != userId {
+		return db.Article{}, ErrUnauthorized
+	}
+	return s.articleRepo.Update(ctx, articleId, title, content)
 }
 
-func (s *ArticleService) DeleteArticle(ctx context.Context, id int64) error {
-	return s.articleRepo.Delete(ctx, id)
+func (s *ArticleService) DeleteArticle(ctx context.Context, userId, articleId int64) error {
+	article, err := s.articleRepo.Get(ctx, articleId)
+	if err != nil {
+		return err
+	}
+
+	if article.AuthorID.Int64 != userId {
+		return ErrUnauthorized
+	}
+	return s.articleRepo.Delete(ctx, articleId)
 }
 
 func (s *ArticleService) ListArticlesByAuthor(ctx context.Context, userID int64, limit, offset int32) ([]db.Article, error) {
