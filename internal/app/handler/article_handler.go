@@ -42,13 +42,15 @@ func (h *ArticleHandler) CreateArticle(c *gin.Context) {
 }
 
 func (h *ArticleHandler) GetArticle(c *gin.Context) {
-	articleId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	articleID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	article, err := h.articleService.GetArticle(c.Request.Context(), articleId)
+	userID := c.MustGet("user_id").(int64)
+
+	article, err := h.articleService.GetArticle(c.Request.Context(), userID, articleID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
 		return
@@ -89,7 +91,7 @@ type updateArticleRequest struct {
 }
 
 func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
-	articleId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	articleID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
@@ -101,9 +103,9 @@ func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
 		return
 	}
 
-	userId := c.MustGet("user_id").(int64)
+	userID := c.MustGet("user_id").(int64)
 
-	article, err := h.articleService.UpdateArticle(c.Request.Context(), userId, articleId, req.Title, req.Content)
+	article, err := h.articleService.UpdateArticle(c.Request.Context(), userID, articleID, req.Title, req.Content)
 	if err != nil {
 		if errors.Is(err, service.ErrUnauthorized) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
@@ -117,15 +119,15 @@ func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
 }
 
 func (h *ArticleHandler) DeleteArticle(c *gin.Context) {
-	articleId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	articleID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	userId := c.MustGet("user_id").(int64)
+	userID := c.MustGet("user_id").(int64)
 
-	if err := h.articleService.DeleteArticle(c.Request.Context(), userId, articleId); err != nil {
+	if err := h.articleService.DeleteArticle(c.Request.Context(), userID, articleID); err != nil {
 		if errors.Is(err, service.ErrUnauthorized) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 			return

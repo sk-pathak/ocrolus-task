@@ -45,5 +45,9 @@ func (s *UserService) GetUser(ctx context.Context, id int64) (db.User, error) {
 }
 
 func (s *UserService) ListArticlesByAuthor(ctx context.Context, userID int64, limit, offset int32) ([]db.Article, error) {
-	return s.userRepo.ListArticlesByAuthor(ctx, userID, limit, offset)
+	articles, err := s.userRepo.ListArticlesByAuthor(ctx, userID, limit, offset)
+	if err != nil {
+		return nil, errors.New("failed to retrieve articles from repository: " + err.Error())
+	}
+	return articles, nil
 }

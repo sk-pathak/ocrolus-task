@@ -53,3 +53,20 @@ func (r *ArticleRepository) CountArticlesByAuthor(ctx context.Context, authorID 
 func (r *ArticleRepository) CountArticles(ctx context.Context) (int64, error) {
 	return r.queries.CountArticles(ctx)
 }
+
+func (r *ArticleRepository) GetRecentlyViewedArticles(ctx context.Context, userID int64) ([]db.Article, error) {
+	articles, err := r.queries.GetRecentlyViewedArticles(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return articles, nil
+}
+
+func (r *ArticleRepository) UpsertArticleView(ctx context.Context, arg db.UpsertArticleViewParams) error {
+	return r.queries.UpsertArticleView(ctx, arg)
+}
+
+func (r *ArticleRepository) DeleteOldArticleViews(ctx context.Context, arg db.DeleteOldArticleViewsParams) error {
+	return r.queries.DeleteOldArticleViews(ctx, arg)
+}

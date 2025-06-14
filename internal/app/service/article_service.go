@@ -3,8 +3,12 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"ocrolus-task/internal/app/repository"
 	"ocrolus-task/internal/db"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var ErrUnauthorized = errors.New("unauthorized")
@@ -23,10 +27,26 @@ func (s *ArticleService) CreateArticle(ctx context.Context, title, content strin
 	return s.articleRepo.Create(ctx, title, content, authorID)
 }
 
-func (s *ArticleService) GetArticle(ctx context.Context, articleId int64) (db.Article, error) {
-	article, err := s.articleRepo.Get(ctx, articleId)
+func (s *ArticleService) GetArticle(ctx context.Context, userID, articleID int64) (db.Article, error) {
+	article, err := s.articleRepo.Get(ctx, articleID)
 	if err != nil {
 		return db.Article{}, err
+	}
+
+	if err := s.articleRepo.UpsertArticleView(ctx, db.UpsertArticleViewParams{
+		UserID:    userID,
+		ArticleID: articleID,
+		ViewedAt:  pgtype.Timestamp{Time: time.Now(), Valid: true},
+	}); err != nil {
+		log.Printf("failed to upsert article view: %v", err)
+	}
+
+	const maxRecentViews = 15
+	if err := s.articleRepo.DeleteOldArticleViews(ctx, db.DeleteOldArticleViewsParams{
+		UserID: userID,
+		Limit:  int32(maxRecentViews),
+	}); err != nil {
+		log.Printf("failed to delete old article views: %v", err)
 	}
 
 	return article, nil
@@ -36,28 +56,28 @@ func (s *ArticleService) ListArticles(ctx context.Context, limit, offset int32) 
 	return s.articleRepo.List(ctx, limit, offset)
 }
 
-func (s *ArticleService) UpdateArticle(ctx context.Context, userId, articleId int64, title, content string) (db.Article, error) {
-	article, err := s.articleRepo.Get(ctx, articleId)
+func (s *ArticleService) UpdateArticle(ctx context.Context, userID, articleID int64, title, content string) (db.Article, error) {
+	article, err := s.articleRepo.Get(ctx, articleID)
 	if err != nil {
 		return db.Article{}, err
 	}
 
-	if article.AuthorID.Int64 != userId {
+	if article.AuthorID.Int64 != userID {
 		return db.Article{}, ErrUnauthorized
 	}
-	return s.articleRepo.Update(ctx, articleId, title, content)
+	return s.articleRepo.Update(ctx, articleID, title, content)
 }
 
-func (s *ArticleService) DeleteArticle(ctx context.Context, userId, articleId int64) error {
-	article, err := s.articleRepo.Get(ctx, articleId)
+func (s *ArticleService) DeleteArticle(ctx context.Context, userID, articleID int64) error {
+	article, err := s.articleRepo.Get(ctx, articleID)
 	if err != nil {
 		return err
 	}
 
-	if article.AuthorID.Int64 != userId {
+	if article.AuthorID.Int64 != userID {
 		return ErrUnauthorized
 	}
-	return s.articleRepo.Delete(ctx, articleId)
+	return s.articleRepo.Delete(ctx, articleID)
 }
 
 func (s *ArticleService) CountArticlesByAuthor(ctx context.Context, authorID int64) (int64, error) {
@@ -66,4 +86,12 @@ func (s *ArticleService) CountArticlesByAuthor(ctx context.Context, authorID int
 
 func (s *ArticleService) CountArticles(ctx context.Context) (int64, error) {
 	return s.articleRepo.CountArticles(ctx)
+}
+
+func (s *ArticleService) GetRecentlyViewedArticles(ctx context.Context, userID int64) ([]db.Article, error) {
+	articles, err := s.articleRepo.GetRecentlyViewedArticles(ctx, userID)
+	if err != nil {
+		return nil, errors.New("failed to retrieve articles from repository: " + err.Error())
+	}
+	return articles, nil
 }

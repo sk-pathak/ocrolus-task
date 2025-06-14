@@ -17,6 +17,13 @@ type Article struct {
 	UpdatedAt pgtype.Timestamp
 }
 
+type ArticleView struct {
+	ID        int64
+	UserID    int64
+	ArticleID int64
+	ViewedAt  pgtype.Timestamp
+}
+
 type User struct {
 	ID       int64
 	Name     string

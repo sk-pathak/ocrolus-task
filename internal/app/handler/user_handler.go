@@ -90,3 +90,15 @@ func (h *UserHandler) ListArticlesByAuthor(c *gin.Context) {
 		"offset":   offset,
 	})
 }
+
+func (h *UserHandler) GetRecentlyViewedArticles(c *gin.Context) {
+	userID := c.MustGet("user_id").(int64)
+
+	articles, err := h.articleService.GetRecentlyViewedArticles(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load viewed articles"})
+		return
+	}
+
+	c.JSON(http.StatusOK, articles)
+}
