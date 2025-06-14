@@ -40,7 +40,8 @@ func main() {
 	articleRepo := repo.NewArticleRepository(queries)
 
 	userService := service.NewUserService(userRepo)
-	articleService := service.NewArticleService(articleRepo)
+	memoryStore := service.NewInMemoryRecentlyViewedStore(15)
+	articleService := service.NewArticleService(articleRepo, memoryStore)
 	authService := service.NewAuthService([]byte(cfg.JWTSecret), userService, userRepo)
 
 	userHandler := handler.NewUserHandler(userService, articleService)

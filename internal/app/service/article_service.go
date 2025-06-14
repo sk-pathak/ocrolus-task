@@ -14,12 +14,14 @@ import (
 var ErrUnauthorized = errors.New("unauthorized")
 
 type ArticleService struct {
-	articleRepo *repository.ArticleRepository
+	articleRepo          *repository.ArticleRepository
+	recentlyViewedMemory RecentlyViewedStore
 }
 
-func NewArticleService(articleRepo *repository.ArticleRepository) *ArticleService {
+func NewArticleService(articleRepo *repository.ArticleRepository, recentlyViewedMemory RecentlyViewedStore) *ArticleService {
 	return &ArticleService{
-		articleRepo: articleRepo,
+		articleRepo:          articleRepo,
+		recentlyViewedMemory: recentlyViewedMemory,
 	}
 }
 
@@ -33,6 +35,10 @@ func (s *ArticleService) GetArticle(ctx context.Context, userID, articleID int64
 		return db.Article{}, err
 	}
 
+	// In Memory Recently Viewed
+	s.recentlyViewedMemory.Add(userID, articleID)
+
+	// DB Recently Viewed
 	// Add article to most recently viewed by this user
 	if err := s.articleRepo.UpsertArticleView(ctx, db.UpsertArticleViewParams{
 		UserID:    userID,
@@ -94,6 +100,21 @@ func (s *ArticleService) GetRecentlyViewedArticles(ctx context.Context, userID i
 	articles, err := s.articleRepo.GetRecentlyViewedArticles(ctx, userID)
 	if err != nil {
 		return nil, errors.New("failed to retrieve articles from repository: " + err.Error())
+	}
+	return articles, nil
+}
+
+func (s *ArticleService) GetRecentlyViewedFromMemory(ctx context.Context, userID int64) ([]db.Article, error) {
+	ids := s.recentlyViewedMemory.Get(userID)
+	var articles []db.Article
+
+	for _, id := range ids {
+		article, err := s.articleRepo.Get(ctx, id)
+		if err == nil {
+			articles = append(articles, article)
+		} else {
+			log.Printf("failed to get article %d from DB: %v", id, err)
+		}
 	}
 	return articles, nil
 }
