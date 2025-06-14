@@ -14,7 +14,6 @@ func RegisterArticleRoutes(r *gin.Engine, articleHandler *handler.ArticleHandler
 	protectedGroup.Use(middlewares.AuthMiddleware(jwtSecret))
 
 	protectedGroup.GET("/:id", articleHandler.GetArticle)
-	protectedGroup.GET("/me", articleHandler.ListArticlesByAuthor)
 	protectedGroup.POST("", articleHandler.CreateArticle)
 	protectedGroup.PUT("/:id", articleHandler.UpdateArticle)
 	protectedGroup.DELETE("/:id", articleHandler.DeleteArticle)

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"ocrolus-task/internal/db"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type UserRepository struct {
@@ -76,4 +78,12 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*db.
 	}
 
 	return &result, nil
+}
+
+func (r *UserRepository) ListArticlesByAuthor(ctx context.Context, authorID int64, limit, offset int32) ([]db.Article, error) {
+	return r.queries.ListArticlesByAuthor(ctx, db.ListArticlesByAuthorParams{
+		AuthorID: pgtype.Int8{Int64: authorID, Valid: true},
+		Limit:    limit,
+		Offset:   offset,
+	})
 }

@@ -42,7 +42,7 @@ func main() {
 	articleService := service.NewArticleService(articleRepo)
 	authService := service.NewAuthService([]byte(cfg.JWTSecret), userService, userRepo)
 
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService,articleService)
 	articleHandler := handler.NewArticleHandler(articleService)
 	authHandler := handler.NewAuthHandler(authService)
 

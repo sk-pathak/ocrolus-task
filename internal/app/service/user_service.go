@@ -43,3 +43,7 @@ func (s *UserService) GetUser(ctx context.Context, id int64) (db.User, error) {
 	}
 	return *user, nil
 }
+
+func (s *UserService) ListArticlesByAuthor(ctx context.Context, userID int64, limit, offset int32) ([]db.Article, error) {
+	return s.userRepo.ListArticlesByAuthor(ctx, userID, limit, offset)
+}
