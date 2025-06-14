@@ -21,6 +21,7 @@ func main() {
 		log.Fatal("Error loading configuration:", err)
 	}
 
+	// Construct PostgreSQL connection string
 	connStr := cfg.DBDriver + "://" + cfg.DBUser + ":" + cfg.DBPassword + "@" + cfg.DBHost + ":" + cfg.DBPort + "/" + cfg.DBName
 
 	dbPool, err := pgxpool.New(context.Background(), connStr)

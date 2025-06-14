@@ -30,7 +30,7 @@ func (h *ArticleHandler) CreateArticle(c *gin.Context) {
 		return
 	}
 
-	userID := c.MustGet("user_id").(int64)
+	userID := c.MustGet("user_id").(int64) // Get current authenticated user from authMiddleware
 
 	article, err := h.articleService.CreateArticle(c.Request.Context(), req.Title, req.Content, userID)
 	if err != nil {
@@ -105,6 +105,7 @@ func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
 
 	userID := c.MustGet("user_id").(int64)
 
+	// Only update article if authenticated user is author
 	article, err := h.articleService.UpdateArticle(c.Request.Context(), userID, articleID, req.Title, req.Content)
 	if err != nil {
 		if errors.Is(err, service.ErrUnauthorized) {
@@ -127,6 +128,7 @@ func (h *ArticleHandler) DeleteArticle(c *gin.Context) {
 
 	userID := c.MustGet("user_id").(int64)
 
+	// Only delete article if authenticated user is author
 	if err := h.articleService.DeleteArticle(c.Request.Context(), userID, articleID); err != nil {
 		if errors.Is(err, service.ErrUnauthorized) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})

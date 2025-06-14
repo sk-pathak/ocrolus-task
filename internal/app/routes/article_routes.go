@@ -8,6 +8,7 @@ import (
 )
 
 func RegisterArticleRoutes(r *gin.Engine, articleHandler *handler.ArticleHandler, jwtSecret []byte) {
+	// ListArticles open to all
 	r.GET("/articles", articleHandler.ListArticles)
 
 	protectedGroup := r.Group("/articles")

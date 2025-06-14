@@ -53,7 +53,7 @@ func cleanupVisitors() {
 }
 
 func RateLimiterMiddleware() gin.HandlerFunc {
-	go cleanupVisitors()
+	go cleanupVisitors() // Periodically remove inactive visitors asynchronously
 
 	return func(c *gin.Context) {
 		ip := c.ClientIP()
@@ -65,6 +65,7 @@ func RateLimiterMiddleware() gin.HandlerFunc {
 		now := time.Now()
 		elapsed := now.Sub(v.lastRefill)
 
+		// Refill tokens if enough time has passed
 		if elapsed >= refillDuration {
 			v.tokens = rateLimit
 			v.lastRefill = now

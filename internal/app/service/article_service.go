@@ -33,6 +33,7 @@ func (s *ArticleService) GetArticle(ctx context.Context, userID, articleID int64
 		return db.Article{}, err
 	}
 
+	// Add article to most recently viewed by this user
 	if err := s.articleRepo.UpsertArticleView(ctx, db.UpsertArticleViewParams{
 		UserID:    userID,
 		ArticleID: articleID,
@@ -41,6 +42,7 @@ func (s *ArticleService) GetArticle(ctx context.Context, userID, articleID int64
 		log.Printf("failed to upsert article view: %v", err)
 	}
 
+	// Remove old (>15) recently viewed articles to stop unbounded growth
 	const maxRecentViews = 15
 	if err := s.articleRepo.DeleteOldArticleViews(ctx, db.DeleteOldArticleViewsParams{
 		UserID: userID,

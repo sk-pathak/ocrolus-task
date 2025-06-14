@@ -17,6 +17,7 @@ func NewUserService(userRepo *repository.UserRepository) *UserService {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, user *db.User) error {
+	// Check if user already exists
 	_, err := s.userRepo.GetUserByID(ctx, user.ID)
 	if err == nil {
 		return errors.New("user already exists")

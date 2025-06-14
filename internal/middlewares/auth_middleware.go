@@ -27,7 +27,8 @@ func AuthMiddleware(secret []byte) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		
+		// Convert user ID from token (string) to int64 for internal use
 		userID, err := strconv.ParseInt(claims.UserID, 10, 64)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user ID in token"})
@@ -35,7 +36,7 @@ func AuthMiddleware(secret []byte) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("user_id", userID)
+		c.Set("user_id", userID) // Set current authenticated user in context
 		c.Next()
 	}
 }

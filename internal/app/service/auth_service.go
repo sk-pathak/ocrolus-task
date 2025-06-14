@@ -49,6 +49,7 @@ func (s *AuthService) RegisterUser(ctx context.Context, req RegisterRequest) (st
 		return "", err
 	}
 
+	// Log in the registered user
 	user, err := s.UserRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return "", errors.New("failed to fetch newly created user")
