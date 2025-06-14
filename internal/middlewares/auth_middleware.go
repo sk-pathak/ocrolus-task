@@ -27,7 +27,7 @@ func AuthMiddleware(secret []byte) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		
+
 		// Convert user ID from token (string) to int64 for internal use
 		userID, err := strconv.ParseInt(claims.UserID, 10, 64)
 		if err != nil {
