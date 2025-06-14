@@ -17,11 +17,11 @@ This project is a backend service built with Go, using Gin for the HTTP framewor
 ## Getting Started
 
 ### Prerequisites
-- Go 1.20+
-- Postgresql
-- Make
-- sqlc
-- goose
+- Go 1.21+
+- postgresql
+- make
+- sqlc (`go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest`)
+- goose (`go install github.com/pressly/goose/v3/cmd/goose@latest`)
 - docker & docker compose
 
 **Make sure both `.env` file and `.secrets` file is present in the root directory. An example for each of these files is included**
@@ -40,7 +40,8 @@ cd ocrolus-task
 ```bash
 make run
 ```
-Or build & execute
+or, build & execute
+
 ```bash
 make exec
 ```

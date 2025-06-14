@@ -10,7 +10,7 @@ import (
 )
 
 type UserHandler struct {
-	userService *service.UserService
+	userService    *service.UserService
 	articleService *service.ArticleService
 }
 

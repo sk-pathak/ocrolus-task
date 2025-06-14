@@ -19,7 +19,7 @@ help:
 	@echo "  exec             Build the application and run it immediately"
 	@echo "  run              Run the Go application directly (cmd/server/main.go)"
 	@echo "  format           Format the Go source code using gofmt"
-	@echo "  create-migration Create a new database migration (requires 'name' argument)"
+	@echo "  create-migration Create a new database migration (requires 'name={name}' argument)"
 	@echo "  apply-migration  Apply all pending database migrations"
 	@echo "  sqlc             Run SQL code generation using sqlc"
 	@echo "  clean            Remove build artifacts from the bin directory"
@@ -42,6 +42,10 @@ format:
 	@find . -name '*.go' | xargs $(GOFMT) -s -w
 
 create-migration:
+	@if [ -z "$(name)" ]; then \
+		echo "Error: missing migration name. Use make create-migration name=your_migration_name"; \
+		exit 1; \
+	fi
 	./scripts/create_migration.sh $(name)
 
 apply-migration:
