@@ -31,11 +31,6 @@ type RegisterRequest struct {
 	Password string `json:"password"`
 }
 
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 func (s *AuthService) RegisterUser(ctx context.Context, req RegisterRequest) (string, error) {
 	hashedPassword := utils.HashPassword(req.Password)
 
@@ -56,6 +51,11 @@ func (s *AuthService) RegisterUser(ctx context.Context, req RegisterRequest) (st
 	}
 
 	return utils.GenerateJWT(fmt.Sprint(user.ID), s.JWTSecret)
+}
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (s *AuthService) Login(ctx context.Context, req LoginRequest) (string, error) {

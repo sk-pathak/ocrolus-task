@@ -9,25 +9,25 @@ import (
 )
 
 type Article struct {
-	ID        int64
-	Title     string
-	Content   string
-	AuthorID  pgtype.Int8
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
+	ID        int64            `json:"id"`
+	Title     string           `json:"title"`
+	Content   string           `json:"content"`
+	AuthorID  pgtype.Int8      `json:"author_id"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type ArticleView struct {
-	ID        int64
-	UserID    int64
-	ArticleID int64
-	ViewedAt  pgtype.Timestamp
+	ID        int64            `json:"id"`
+	UserID    int64            `json:"user_id"`
+	ArticleID int64            `json:"article_id"`
+	ViewedAt  pgtype.Timestamp `json:"viewed_at"`
 }
 
 type User struct {
-	ID       int64
-	Name     string
-	Email    string
-	Username string
-	Password string
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

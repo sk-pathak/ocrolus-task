@@ -14,10 +14,10 @@ INSERT INTO users (name, email, username, password) VALUES ($1, $2, $3, $4) RETU
 `
 
 type CreateUserParams struct {
-	Name     string
-	Email    string
-	Username string
-	Password string
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {

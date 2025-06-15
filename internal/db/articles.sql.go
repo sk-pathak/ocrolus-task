@@ -40,9 +40,9 @@ RETURNING id, title, content, author_id, created_at, updated_at
 `
 
 type CreateArticleParams struct {
-	Title    string
-	Content  string
-	AuthorID pgtype.Int8
+	Title    string      `json:"title"`
+	Content  string      `json:"content"`
+	AuthorID pgtype.Int8 `json:"author_id"`
 }
 
 func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (Article, error) {
@@ -91,8 +91,8 @@ SELECT id, title, content, author_id, created_at, updated_at FROM articles ORDER
 `
 
 type ListArticlesParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListArticles(ctx context.Context, arg ListArticlesParams) ([]Article, error) {
@@ -130,9 +130,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListArticlesByAuthorParams struct {
-	AuthorID pgtype.Int8
-	Limit    int32
-	Offset   int32
+	AuthorID pgtype.Int8 `json:"author_id"`
+	Limit    int32       `json:"limit"`
+	Offset   int32       `json:"offset"`
 }
 
 func (q *Queries) ListArticlesByAuthor(ctx context.Context, arg ListArticlesByAuthorParams) ([]Article, error) {
@@ -170,9 +170,9 @@ RETURNING id, title, content, author_id, created_at, updated_at
 `
 
 type UpdateArticleParams struct {
-	ID      int64
-	Title   string
-	Content string
+	ID      int64  `json:"id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
 }
 
 func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (Article, error) {

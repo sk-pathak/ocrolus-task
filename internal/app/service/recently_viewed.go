@@ -1,6 +1,9 @@
 package service
 
-import "sync"
+import (
+	"slices"
+	"sync"
+)
 
 type RecentlyViewedStore interface {
 	Add(userID, articleID int64)
@@ -28,7 +31,7 @@ func (s *InMemoryRecentlyViewedStore) Add(userID, articleID int64) {
 	// Remove if already present
 	for i, id := range views {
 		if id == articleID {
-			views = append(views[:i], views[i+1:]...)
+			views = slices.Delete(views, i, i+1)
 			break
 		}
 	}

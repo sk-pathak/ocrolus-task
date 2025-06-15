@@ -48,8 +48,11 @@ func main() {
 	articleHandler := handler.NewArticleHandler(articleService)
 	authHandler := handler.NewAuthHandler(authService)
 
-	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
 	r.RedirectTrailingSlash = true
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 	r.Use(middlewares.SetupCORS())
 	r.Use(middlewares.RateLimiterMiddleware())
 

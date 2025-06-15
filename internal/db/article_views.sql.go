@@ -24,8 +24,8 @@ WHERE article_views.user_id = $1
 `
 
 type DeleteOldArticleViewsParams struct {
-	UserID int64
-	Limit  int32
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
 }
 
 func (q *Queries) DeleteOldArticleViews(ctx context.Context, arg DeleteOldArticleViewsParams) error {
@@ -77,9 +77,9 @@ DO UPDATE SET viewed_at = EXCLUDED.viewed_at
 `
 
 type UpsertArticleViewParams struct {
-	UserID    int64
-	ArticleID int64
-	ViewedAt  pgtype.Timestamp
+	UserID    int64            `json:"user_id"`
+	ArticleID int64            `json:"article_id"`
+	ViewedAt  pgtype.Timestamp `json:"viewed_at"`
 }
 
 func (q *Queries) UpsertArticleView(ctx context.Context, arg UpsertArticleViewParams) error {
