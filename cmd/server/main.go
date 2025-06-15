@@ -53,7 +53,7 @@ func main() {
 	r.Use(middlewares.SetupCORS())
 	r.Use(middlewares.RateLimiterMiddleware())
 
-	routes.RegisterAuthRoutes(r, authHandler, []byte(cfg.JWTSecret))
+	routes.RegisterAuthRoutes(r, authHandler)
 	routes.RegisterUserRoutes(r, userHandler, []byte(cfg.JWTSecret))
 	routes.RegisterArticleRoutes(r, articleHandler, []byte(cfg.JWTSecret))
 

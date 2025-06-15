@@ -5,7 +5,7 @@ import (
 	"ocrolus-task/internal/app/handler"
 )
 
-func RegisterAuthRoutes(r *gin.Engine, authHandler *handler.AuthHandler, jwtSecret []byte) {
+func RegisterAuthRoutes(r *gin.Engine, authHandler *handler.AuthHandler) {
 	r.POST("/register", authHandler.Register)
 	r.POST("/login", authHandler.Login)
 }
