@@ -15,14 +15,11 @@ const deleteOldArticleViews = `-- name: DeleteOldArticleViews :exec
 DELETE FROM article_views
 WHERE article_views.user_id = $1
   AND id NOT IN (
-    SELECT av_inner.id
-    FROM (
-      SELECT article_views.id
-      FROM article_views
-      WHERE article_views.user_id = $1
-      ORDER BY article_views.viewed_at DESC
-      LIMIT $2
-    ) AS av_inner
+    SELECT id
+    FROM article_views
+    WHERE user_id = $1
+    ORDER BY viewed_at DESC
+    LIMIT $2
   )
 `
 
